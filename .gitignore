@@ -1,0 +1,8 @@
+*.egg-info
+*.pyc
+*.pyo
+*.swp
+*~
+/.tox
+/build
+/dist
