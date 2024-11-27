@@ -35,8 +35,6 @@ django-cms = ">=3"
 django-colorfield = "*"
 django-filer = "*"
 pillow = "*"
-qrcode = ">=7.3"
-qrcode-styled = ">=0.2"
 segno = "*"
 
 [tool.poetry.dev-dependencies]
