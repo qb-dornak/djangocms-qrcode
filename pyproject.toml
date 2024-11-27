@@ -24,7 +24,7 @@ indent = 4
 
 [tool.poetry]
 name = "djangocms-qrcode"
-version = "0.1.0"
+version = "0.1.1"
 description = "Django CMS content plugin that allows to put QR codes in the pages"
 authors = ["Jakub Dorňák <jakub.dornak@qbsoftware.cz>"]
 license = "BSD"
