@@ -65,19 +65,9 @@ class QRCodeBase(CMSPlugin):
     alignment_light = ColorField(_("alignment light color"), blank=True, null=True)
     finder_dark = ColorField(_("finder dark color"), blank=True, null=True)
     finder_light = ColorField(_("finder light color"), blank=True, null=True)
-    logo = FilerImageField(
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-        verbose_name=_("logo"),
-    )
+    logo = FilerImageField(blank=True, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("logo"))
     background = FilerImageField(
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-        verbose_name=_("background"),
+        blank=True, null=True, on_delete=models.PROTECT, related_name="+", verbose_name=_("background")
     )
 
     class Meta:
@@ -110,36 +100,23 @@ class QRCodeBase(CMSPlugin):
                 kwargs[attr] = value
         buffer = BytesIO()
         if self.background:
-            qrcode.to_artistic(
-                background=self.background.file.open(), target=buffer, **kwargs
-            )
+            qrcode.to_artistic(background=self.background.file.open(), target=buffer, **kwargs)
         else:
             qrcode.save(buffer, **kwargs)
         if self.logo:
             buffer.seek(0)
             qr_image = Image.open(buffer).convert("RGB")
-            qr_size = get_symbol_size(
-                (len(qrcode.matrix[0]), len(qrcode.matrix)), scale=1, border=0
-            )[0]
-            logo_size = int(
-                sqrt(
-                    (qr_size * qr_size - 3 * 64 - 25)
-                    * MAX_RELATIVE_LOGO_SIZE[qrcode.error]
-                )
-            )
+            qr_size = get_symbol_size((len(qrcode.matrix[0]), len(qrcode.matrix)), scale=1, border=0)[0]
+            logo_size = int(sqrt((qr_size * qr_size - 3 * 64 - 25) * MAX_RELATIVE_LOGO_SIZE[qrcode.error]))
             # logo size and qr size must both even or both odd
             if qr_size % 2 != logo_size % 2:
                 logo_size -= 1
-            logo_image = Image.open(self.logo.file.open()).resize(
-                (logo_size * self.scale, logo_size * self.scale)
-            )
+            logo_image = Image.open(self.logo.file.open()).resize((logo_size * self.scale, logo_size * self.scale))
             position = (qr_image.size[0] - logo_image.size[0]) // 2
             qr_image.paste(logo_image, (position, position))
             buffer = BytesIO()
             qr_image.save(buffer, format="png")
-        return "data:image/png;base64,{0}".format(
-            b64encode(buffer.getvalue()).decode("ascii")
-        )
+        return "data:image/png;base64,{0}".format(b64encode(buffer.getvalue()).decode("ascii"))
 
 
 class QRCode(QRCodeBase):
@@ -157,9 +134,7 @@ class QRPageLink(QRCodeBase):
 
 
 class QRFileLink(QRCodeBase):
-    file = FilerFileField(
-        on_delete=models.PROTECT, related_name="+", verbose_name=_("file")
-    )
+    file = FilerFileField(on_delete=models.PROTECT, related_name="+", verbose_name=_("file"))
 
     def get_content(self, request: HttpRequest) -> Union[str, bytes]:
         return request.build_absolute_uri(self.file.get_absolute_url())
